@@ -77,10 +77,10 @@ module.exports = (env, argv) => {
 
   const config = {
     entry: {
-      app: sourcePath + "/main.app.ts",
-      style: sourcePath + "/styles.scss",
-      cadesplugin: externalScriptsPath + "/webcrypto/cadesplugin.js",
-      vendor: ["signalr", "angular"]
+      app: sourcePath + "/src/amaurote.ts"
+      //style: sourcePath + "/styles.scss",
+      //cadesplugin: externalScriptsPath + "/webcrypto/cadesplugin.js",
+      //vendor: ["signalr", "angular"]
     },
     output: {
       path: distPath,
