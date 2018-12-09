@@ -23,7 +23,8 @@
     "clean-build": "rimraf dist & copyfiles -f src/index.html dist/ & copyfiles -f src/assets/* dist/assets & npm run webpack-prod"
   },
   "dependencies": {
-    "three.js": "0.77.1"
+    "first-person-controls": "^1.0.1",
+    "three": "0.99.0"
   },
   "devDependencies": {
     "@types/three": "0.93.10",

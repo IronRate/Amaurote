@@ -1,13 +1,19 @@
-import * as THREE from "three.js";
+import THREE = require("three");
+import FirstPersonControls from "first-person-controls";
+
+
 
 export class Amaurote {
-  camera: THREE.Camera;
+  private static enclosureThis: Amaurote;
+
+  camera: THREE.PerspectiveCamera;
   scene: THREE.Scene;
   renderer: THREE.Renderer;
   geometry: THREE.Geometry;
   material: THREE.Material;
   mesh: THREE.Mesh;
-  private static enclosureThis: Amaurote;
+  controls: FirstPersonControls;
+  clock: THREE.Clock;
 
   constructor() {
     Amaurote.enclosureThis = this;
@@ -36,13 +42,21 @@ export class Amaurote {
     document.body.appendChild(this.renderer.domElement);
     window.addEventListener("resize", this.onResize);
     this.onResize();
+    this.initUserControl();
+    this.clock = new THREE.Clock(true);
+  }
+
+  private initUserControl() {
+    this.controls = new FirstPersonControls(this.camera);
+    this.controls.movementSpeed = 1;
+    this.controls.lookSpeed = 0.1;
   }
 
   private onResize() {
     const self = Amaurote.enclosureThis;
     if (self.renderer) {
-      // this.camera.aspect = window.innerWidth / window.innerHeight;
-      // this.camera.updateProjectionMatrix();
+      self.camera.aspect = window.innerWidth / window.innerHeight;
+      self.camera.updateProjectionMatrix();
       self.renderer.setSize(window.innerWidth, window.innerHeight);
     }
   }
@@ -54,6 +68,7 @@ export class Amaurote {
     self.mesh.rotation.x += 0.01;
     self.mesh.rotation.y += 0.02;
 
+    self.controls.update(self.clock.getDelta());
     self.renderer.render(self.scene, self.camera);
   }
 }
