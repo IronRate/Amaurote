@@ -1,11 +1,11 @@
-import { MaterialManager } from "./components/material-manager";
+import { ResourceManager } from "./components/resource-manager";
 import { World } from "./components/world";
 import THREE = require("three");
 import FirstPersonControls from "first-person-controls";
 
 export class Amaurote {
   private static enclosureThis: Amaurote;
-  private frustumSize = 200;
+  private frustumSize = 75;
 
   camera: THREE.OrthographicCamera;
   scene: THREE.Scene;
@@ -18,11 +18,11 @@ export class Amaurote {
   radius = 500;
   theta = 0;
   world: World;
-  materialManager: MaterialManager;
+  resourceManager: ResourceManager;
 
   constructor() {
     Amaurote.enclosureThis = this;
-    this.materialManager = new MaterialManager();
+    this.resourceManager = new ResourceManager();
     this.init();
     this.rendering();
   }
@@ -45,21 +45,30 @@ export class Amaurote {
   }
 
   private initMeterials() {
-    var grass = new THREE.MeshPhongMaterial({
-      color: 0x00ff00
-    });
-    var sand = new THREE.MeshPhongMaterial({
-      color: 0xffff00,
-      specular: 0xffff00,
-      shininess: 30,
-      flatShading: true
-    });
-    var water = new THREE.MeshPhongMaterial({ color: 0x0000ff });
-    var stoune = new THREE.MeshPhongMaterial({ color: 0xffffff });
+    this.resourceManager.materials.add(
+      "grass",
+      new THREE.MeshPhongMaterial({
+        color: 0x00ff00
+      })
+    );
 
-    this.materialManager.add("grass", grass);
-    this.materialManager.add("sand", sand);
-    this.materialManager.add("water", water);
+    this.resourceManager.materials.add(
+      "sand",
+      new THREE.MeshPhongMaterial({
+        color: 0xffff00,
+        specular: 0xffff00,
+        shininess: 30,
+        flatShading: true
+      })
+    );
+    this.resourceManager.materials.add(
+      "water",
+      new THREE.MeshPhongMaterial({ color: 0x0000ff })
+    );
+    this.resourceManager.materials.add(
+      "stone",
+      new THREE.MeshPhongMaterial({ color: 0xffffff })
+    );
   }
 
   private initLights() {
@@ -133,7 +142,7 @@ export class Amaurote {
 
   private initWorld() {
     this.world = new World(50, 50);
-    for (var i = 0; i < this.world.objects.length; i++) {
+    for (let i = 0; i < this.world.objects.length; i++) {
       let coord = this.world.getCoord(i);
       let mesh: THREE.Mesh = null;
       switch (this.world.objects[i].groundType) {
@@ -141,28 +150,41 @@ export class Amaurote {
         case 2:
         case 3:
           var geometry = new THREE.BoxGeometry(10.0, 10.0, 10.0);
-          mesh = new THREE.Mesh(geometry, this.materialManager.get("grass"));
-          mesh.position.set(coord.x * 10, 0, coord.y * 10);
+          mesh = new THREE.Mesh(
+            geometry,
+            this.resourceManager.materials.get("grass")
+          );
           break;
         case 4:
         case 5:
         case 6:
           var geometry = new THREE.BoxGeometry(10.0, 10.0, 10.0);
-          mesh = new THREE.Mesh(geometry, this.materialManager.get("sand"));
-          mesh.position.set(coord.x * 10, 0, coord.y * 10);
+          mesh = new THREE.Mesh(
+            geometry,
+            this.resourceManager.materials.get("sand")
+          );
           break;
         case 7:
           var geometry = new THREE.BoxGeometry(10.0, 10.0, 10.0);
-          mesh = new THREE.Mesh(geometry, this.materialManager.get("water"));
-          mesh.position.set(coord.x * 10, 0, coord.y * 10);
+          mesh = new THREE.Mesh(
+            geometry,
+            this.resourceManager.materials.get("water")
+          );
           break;
         default:
           var geometry = new THREE.BoxGeometry(10.0, 10.0, 10.0);
-          mesh = new THREE.Mesh(geometry, this.materialManager.get("stoune"));
-          mesh.position.set(coord.x * 10, 0, coord.y * 10);
+          mesh = new THREE.Mesh(
+            geometry,
+            this.resourceManager.materials.get("stoune")
+          );
           break;
       }
       if (mesh) {
+        mesh.position.set(
+          -(this.world.sizeX/2 * 10) + coord.x * 10,
+          0,
+          -(this.world.sizeY/2 * 10) + coord.y * 10
+        );
         this.scene.add(mesh);
       }
     }
