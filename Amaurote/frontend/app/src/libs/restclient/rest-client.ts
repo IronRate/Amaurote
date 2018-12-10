@@ -47,6 +47,24 @@ export class RestClient {
     });
   }
 
+  public option(address:string):Promise<void>{
+       const self = this;
+    return new Promise((resolve, reject) => {
+      var native = self._createNativeClient();
+      native.open("OPTION", self.baseAddress + address, true);
+      native.onreadystatechange = function() {
+        if (native.readyState == 4) {
+          if (native.status === 200) {
+            resolve();
+          } else {
+            reject(native.responseText);
+          }
+        }
+      };
+      native.send();
+    });
+  }
+
   public get<T>(address: string): Promise<T> {
     const self = this;
     return new Promise((resolve, reject) => {

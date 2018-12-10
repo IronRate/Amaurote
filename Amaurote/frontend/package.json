@@ -15,7 +15,7 @@
   ],
   "scripts": {
     "prestart": "rimraf dist & copyfiles -f src/assets/* dist/",
-    "start": "webpack-dev-server --mode=development --open ",
+    "start": "webpack-dev-server --mode=development --open --watch",
     "prebuild": "npm run prestart",
     "build": "webpack --mode=production --optimize-minimize",
     "test": "karma start --single-run",
