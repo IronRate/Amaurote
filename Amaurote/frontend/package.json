@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "first-person-controls": "^1.0.1",
+    "map-camera-controls": "0.1.4",
     "three": "0.99.0"
   },
   "devDependencies": {

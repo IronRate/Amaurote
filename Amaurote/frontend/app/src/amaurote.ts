@@ -1,10 +1,11 @@
+import { MaterialManager } from "./components/material-manager";
 import { World } from "./components/world";
 import THREE = require("three");
 import FirstPersonControls from "first-person-controls";
 
 export class Amaurote {
   private static enclosureThis: Amaurote;
-  private frustumSize = 1000;
+  private frustumSize = 200;
 
   camera: THREE.OrthographicCamera;
   scene: THREE.Scene;
@@ -17,9 +18,11 @@ export class Amaurote {
   radius = 500;
   theta = 0;
   world: World;
+  materialManager: MaterialManager;
 
   constructor() {
     Amaurote.enclosureThis = this;
+    this.materialManager = new MaterialManager();
     this.init();
     this.rendering();
   }
@@ -30,12 +33,51 @@ export class Amaurote {
     this.clock = new THREE.Clock(true);
 
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
+
     document.body.appendChild(this.renderer.domElement);
     window.addEventListener("resize", this.onResize);
     this.onResize();
     //this.initUserControl();
+    this.initMeterials();
+    this.initLights();
     this.initWorld();
     this.initScene();
+  }
+
+  private initMeterials() {
+    var grass = new THREE.MeshPhongMaterial({
+      color: 0x00ff00
+    });
+    var sand = new THREE.MeshPhongMaterial({
+      color: 0xffff00,
+      specular: 0xffff00,
+      shininess: 30,
+      flatShading: true
+    });
+    var water = new THREE.MeshPhongMaterial({ color: 0x0000ff });
+    var stoune = new THREE.MeshPhongMaterial({ color: 0xffffff });
+
+    this.materialManager.add("grass", grass);
+    this.materialManager.add("sand", sand);
+    this.materialManager.add("water", water);
+  }
+
+  private initLights() {
+    this.scene.add(new THREE.AmbientLight(0x111111));
+    var directionalLight = new THREE.DirectionalLight(0xffffff, 0.125);
+    directionalLight.position.x = Math.random() - 0.5;
+    directionalLight.position.y = Math.random() - 0.5;
+    directionalLight.position.z = Math.random() - 0.5;
+    directionalLight.position.normalize();
+    this.scene.add(directionalLight);
+    var pointLight = new THREE.PointLight(0xffffff, 1);
+    this.scene.add(pointLight);
+    pointLight.add(
+      new THREE.Mesh(
+        new THREE.SphereBufferGeometry(4, 8, 8),
+        new THREE.MeshBasicMaterial({ color: 0xffffff })
+      )
+    );
   }
 
   private initCamera() {
@@ -56,13 +98,20 @@ export class Amaurote {
       1000
     );
 
-    this.camera.position.set(-200, 200, 200);
+    this.camera.position.set(-100, 100, 100);
   }
 
   private initUserControl() {
-    this.controls = new FirstPersonControls(this.camera);
-    this.controls.movementSpeed = 1;
-    this.controls.lookSpeed = 0.1;
+    // this.controls = new FirstPersonControls(this.camera);
+    // this.controls.movementSpeed = 1;
+    // this.controls.lookSpeed = 0.1;
+    //this.controls = new THREE.Map
+    this.controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+    this.controls.dampingFactor = 0.25;
+    this.controls.screenSpacePanning = false;
+    this.controls.minDistance = 100;
+    this.controls.maxDistance = 500;
+    this.controls.maxPolarAngle = Math.PI / 2;
   }
 
   private initScene() {
@@ -89,10 +138,28 @@ export class Amaurote {
       let mesh: THREE.Mesh = null;
       switch (this.world.objects[i].groundType) {
         case 1:
-          var geometry = new THREE.BoxGeometry(1.0, 1.0, 1.0);
-          //var material = new THREE.MeshNormalMaterial();
-          mesh = new THREE.Mesh(geometry, this.material);
-          mesh.position.set(coord.x, 0, coord.y);
+        case 2:
+        case 3:
+          var geometry = new THREE.BoxGeometry(10.0, 10.0, 10.0);
+          mesh = new THREE.Mesh(geometry, this.materialManager.get("grass"));
+          mesh.position.set(coord.x * 10, 0, coord.y * 10);
+          break;
+        case 4:
+        case 5:
+        case 6:
+          var geometry = new THREE.BoxGeometry(10.0, 10.0, 10.0);
+          mesh = new THREE.Mesh(geometry, this.materialManager.get("sand"));
+          mesh.position.set(coord.x * 10, 0, coord.y * 10);
+          break;
+        case 7:
+          var geometry = new THREE.BoxGeometry(10.0, 10.0, 10.0);
+          mesh = new THREE.Mesh(geometry, this.materialManager.get("water"));
+          mesh.position.set(coord.x * 10, 0, coord.y * 10);
+          break;
+        default:
+          var geometry = new THREE.BoxGeometry(10.0, 10.0, 10.0);
+          mesh = new THREE.Mesh(geometry, this.materialManager.get("stoune"));
+          mesh.position.set(coord.x * 10, 0, coord.y * 10);
           break;
       }
       if (mesh) {
@@ -118,14 +185,17 @@ export class Amaurote {
     const self = Amaurote.enclosureThis;
     requestAnimationFrame(self.rendering);
 
-    self.mesh.rotation.x += 0.01;
-    self.mesh.rotation.y += 0.02;
+    // self.mesh.rotation.x += 0.01;
+    // self.mesh.rotation.y += 0.02;
     // self.theta += 0.1;
-    // self.camera.position.x =self.radius * Math.sin(THREE.Math.degToRad(self.theta));
-    // self.camera.position.y =self.radius * Math.sin(THREE.Math.degToRad(self.theta));
-    // self.camera.position.z =self.radius * Math.cos(THREE.Math.degToRad(self.theta));
-    self.camera.lookAt(self.scene.position);
-    // self.camera.updateMatrixWorld(false);
+    // self.camera.position.x =
+    //   self.radius * Math.sin(THREE.Math.degToRad(self.theta));
+    // self.camera.position.y =
+    //   self.radius * Math.sin(THREE.Math.degToRad(self.theta));
+    // self.camera.position.z =
+    //   self.radius * Math.cos(THREE.Math.degToRad(self.theta));
+    self.camera.lookAt(0, 0, 1);
+    self.camera.updateProjectionMatrix();
 
     self.renderer.render(self.scene, self.camera);
     if (self.controls) {
