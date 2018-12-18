@@ -171,7 +171,7 @@ module.exports = (env, argv) => {
       hot: true,
       proxy: {
         "/api/**": {
-          target: "http://localhost:5000/api/",
+          target: "http://localhost:60643/api/",
           pathRewrite: {
             "^/api": ""
           },
@@ -191,10 +191,10 @@ module.exports = (env, argv) => {
               proxyRes.headers[key] && proxyRes.headers[key].split(",");
           }
         },
-        "/breeze/**": {
-          target: "http://localhost:5000/breeze/",
-          pathRewrite: {
-            "^/breeze": ""
+        "/content/**":{
+          target:"http://localhost:60643/content/",
+          pathRewrite:{
+            "^/content":""
           },
           logLevel: "debug",
           changeOrigin: true,
@@ -213,7 +213,7 @@ module.exports = (env, argv) => {
           }
         },
         "/signalr/**": {
-          target: "http://localhost:5000/signalr/",
+          target: "http://localhost:60643/signalr/",
           pathRewrite: {
             "^/signalr": ""
           },
