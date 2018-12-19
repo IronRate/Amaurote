@@ -45,29 +45,37 @@ export class Amaurote {
   }
 
   private initMeterials() {
+    const loader = new THREE.TextureLoader();
+    const texture = loader.load("/content/textures/brickwall.jpg");
     this.resourceManager.materials.add(
       "grass",
-      new THREE.MeshPhongMaterial({
-        color: 0x00ff00
+      new THREE.MeshBasicMaterial({
+        color: 0x00ff00,
+        map: texture
       })
     );
 
     this.resourceManager.materials.add(
       "sand",
-      new THREE.MeshPhongMaterial({
+      new THREE.MeshBasicMaterial({
         color: 0xffff00,
-        specular: 0xffff00,
-        shininess: 30,
-        flatShading: true
+        flatShading: true,
+        map: texture
       })
     );
     this.resourceManager.materials.add(
       "water",
-      new THREE.MeshPhongMaterial({ color: 0x0000ff })
+      new THREE.MeshBasicMaterial({
+        color: 0x0000ff,
+        map: texture
+      })
     );
     this.resourceManager.materials.add(
       "stone",
-      new THREE.MeshPhongMaterial({ color: 0xffffff })
+      new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        map: texture
+      })
     );
   }
 
@@ -181,9 +189,9 @@ export class Amaurote {
       }
       if (mesh) {
         mesh.position.set(
-          -(this.world.sizeX/2 * 10) + coord.x * 10,
+          -((this.world.sizeX / 2) * 10) + coord.x * 10,
           0,
-          -(this.world.sizeY/2 * 10) + coord.y * 10
+          -((this.world.sizeY / 2) * 10) + coord.y * 10
         );
         this.scene.add(mesh);
       }
