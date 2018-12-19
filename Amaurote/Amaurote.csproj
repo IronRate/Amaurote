@@ -16,6 +16,7 @@
     <Folder Include="Content\Textures\" />
     <Folder Include="Content\Models\" />
     <Folder Include="wwwroot\" />
+    <Folder Include="Content\" />
   </ItemGroup>
 
   <ItemGroup>
